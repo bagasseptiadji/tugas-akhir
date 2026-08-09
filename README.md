@@ -104,3 +104,4 @@ Ganti `IP-LAPTOP` dengan IP komputer yang menjalankan Laravel.
 - TDS: 100 sampai 500 ppm
 
 Nilai batas normal dan aturan warning/bahaya dapat diubah dari menu **Sistem > Pengaturan**.
+# tugas-akhir
