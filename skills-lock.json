@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "typeui-fundamentals": {
+      "source": "bergside/typeui",
+      "sourceType": "github",
+      "skillPath": "skills/fundamentals/SKILL.md",
+      "computedHash": "5f830b1b8b052b642712f297918e5daf4d131dcfe957cb98eae31fa9319d1eed"
+    }
+  }
+}
