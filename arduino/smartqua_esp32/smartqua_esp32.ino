@@ -60,7 +60,12 @@ DallasTemperature sensorSuhu(&oneWire);
 // ========================================================================
 const float PH_7_VOLTAGE = 2.53;
 const float PH_4_VOLTAGE = 3.30;
+// Titik ke-3 untuk sisi basa. Isi dengan tegangan yang tampil di Serial
+// ("[DATA] ... V") saat probe di larutan buffer pH 9.18.
+const float PH_9_VOLTAGE = 2.07;
 float phStep = 0.0;
+float phStepBasa = 0.0;
+float phTegangan = 0.0;
 
 // ========================================================================
 // DATA SENSOR
@@ -133,6 +138,7 @@ void inisialisasiSistem() {
 
   analogSetAttenuation(ADC_11db);
   phStep = (PH_4_VOLTAGE - PH_7_VOLTAGE) / 3.0;
+  phStepBasa = (PH_7_VOLTAGE - PH_9_VOLTAGE) / 2.18;
 
   sensorSuhu.begin();
   lcd.init();
@@ -245,7 +251,12 @@ void bacaSemuaSensor() {
 
 float hitungPH(int rawADC) {
   const float tegangan = (3.3 / 4095.0) * rawADC;
-  float hasilPH = 7.00 - ((tegangan - PH_7_VOLTAGE) / phStep);
+  phTegangan = tegangan;
+
+  // Tegangan di bawah titik pH 7 = sisi basa, pakai slope pH 7 -> 9.18
+  float hasilPH = tegangan < PH_7_VOLTAGE
+    ? 7.00 + ((PH_7_VOLTAGE - tegangan) / phStepBasa)
+    : 7.00 - ((tegangan - PH_7_VOLTAGE) / phStep);
 
   if (hasilPH < 0.00) {
     hasilPH = 0.00;
@@ -338,7 +349,9 @@ void tampilkanStatusKirim(const String& pesan) {
 void kirimDataKeSerial() {
   Serial.print("[DATA] pH: ");
   Serial.print(dataAkuarium.ph, 2);
-  Serial.print(" | Suhu: ");
+  Serial.print(" (");
+  Serial.print(phTegangan, 3);
+  Serial.print(" V) | Suhu: ");
 
   if (dataAkuarium.suhuValid) {
     Serial.print(dataAkuarium.suhu, 1);
